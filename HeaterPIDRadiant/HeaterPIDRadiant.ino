@@ -1,20 +1,20 @@
 /*
- * HeaterPIDRadiant.ino
- * Copyright (C) 2021 Giuseppe Roberti
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+   HeaterPIDRadiant.ino
+   Copyright (C) 2021 Giuseppe Roberti
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include <TaskScheduler.h>
 #include <OneWire.h>
@@ -40,8 +40,8 @@ const int duty = 64;
 float temp;     // input
 float heat;     // output
 float setpoint; // target
-float Kp=1, Kd=1000, Ki=0;
-QuickPID heatPID (&temp, &heat, &setpoint, Kp, Ki, Kp, heatPID.Action::DIRECT);
+float Kp = 1.00, Ki = 0.00, Kd = 0.00;
+QuickPID heatPID (&temp, &heat, &setpoint, Kp, Ki, Kd, heatPID.Action::DIRECT);
 
 ////////////
 // Heating?
@@ -56,16 +56,16 @@ void reqTemp ();
 void setpointInput ();
 void printSerial ();
 
-Task computeHeatTask (1000*TASK_MILLISECOND, TASK_FOREVER, computeHeat);
-Task reqTempTask (100*TASK_MILLISECOND, TASK_FOREVER, reqTemp);
-Task setpointInputTask (100*TASK_MILLISECOND, TASK_FOREVER, setpointInput);
-Task printSerialTask (100*TASK_MILLISECOND, TASK_FOREVER, printSerial);
+Task computeHeatTask (1000 * TASK_MILLISECOND, TASK_FOREVER, computeHeat);
+Task reqTempTask (100 * TASK_MILLISECOND, TASK_FOREVER, reqTemp);
+Task setpointInputTask (100 * TASK_MILLISECOND, TASK_FOREVER, setpointInput);
+Task printSerialTask (100 * TASK_MILLISECOND, TASK_FOREVER, printSerial);
 
 /////////////
 // Main Code
 void setup() {
   Serial.begin(115200);
-  
+
   // Temperature Reader
   sensors.begin();
 
@@ -79,6 +79,7 @@ void setup() {
   computeHeatTask.enable();
 
   heatPID.SetMode(heatPID.Control::TIMER);
+  heatPID.SetOutputLimits(-1.0, 1.0);
 
   // configure PWM
   ledcSetup(heatChannel, freq, resolution);
@@ -105,9 +106,7 @@ void computeHeat () {
 }
 
 boolean needsHeating () {
-  heating = heat > 0.0;
-
-  return heating;
+  return heating = heating ? heat > 0.3 : 0.5 < heat; // 0.2 °C hysteresis iff Kp=1,Ki=Kd=0
 }
 
 /////////////////////////
