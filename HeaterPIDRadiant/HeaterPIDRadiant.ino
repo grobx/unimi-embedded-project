@@ -40,7 +40,7 @@ const int duty = 64;
 float temp;     // input
 float heat;     // output
 float setpoint; // target
-float Kp = 1.00, Ki = 0.00, Kd = 0.00;
+float Kp = 0.100, Ki = 2.00, Kd = 0.00;
 QuickPID heatPID (&temp, &heat, &setpoint, Kp, Ki, Kd, heatPID.Action::DIRECT);
 
 ////////////
@@ -79,7 +79,7 @@ void setup() {
   computeHeatTask.enable();
 
   heatPID.SetMode(heatPID.Control::TIMER);
-  heatPID.SetOutputLimits(-1.0, 1.0);
+  heatPID.SetOutputLimits(0.0, 1.0);
 
   // configure PWM
   ledcSetup(heatChannel, freq, resolution);
@@ -106,7 +106,7 @@ void computeHeat () {
 }
 
 boolean needsHeating () {
-  return heating = heating ? heat > 0.3 : 0.5 < heat; // 0.2 °C hysteresis iff Kp=1,Ki=Kd=0
+  return heating = heat >= 0.5;
 }
 
 /////////////////////////
@@ -135,7 +135,7 @@ void setpointInput () {
 }
 
 void resetPID () {
-  heat = 0.0;
+//  heat = 0.0;
   heatPID.SetMode(heatPID.Control::MANUAL);
   heatPID.SetMode(heatPID.Control::TIMER);
 }
@@ -144,9 +144,9 @@ void resetPID () {
 // Print Task
 void printSerial () {
   Serial.printf("temp:%f,setpoint:%f,heat:%f,heating:%s,P:%f,I:%f,D:%f,X:%f\n",
-    temp, setpoint, heat,
-    heating ? "+1" : "-1",
-    heatPID.GetPterm(), heatPID.GetIterm(), heatPID.GetDterm(),
-    heatPID.GetPterm() + heatPID.GetIterm() + heatPID.GetDterm()
-  );
+                temp*0.1, setpoint*0.1, heat,
+                heating ? "+1" : "-1",
+                heatPID.GetPterm(), heatPID.GetIterm(), heatPID.GetDterm(),
+                heatPID.GetPterm() + heatPID.GetIterm() + heatPID.GetDterm()
+               );
 }
