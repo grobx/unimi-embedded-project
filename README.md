@@ -1,21 +1,55 @@
-### ESPerimentino PID
+# ESPerimentino PID
 
-Autore: Giuseppe Roberti
+## The Project
 
-Descrizione: Il presente progetto permette di effettuare degli esperimenti per il riscaldamento di un ambiente per mezzo di un elemento riscaldante comandato da un controller PID. L'elemento riscaldante può operare con o senza ventola. Vi saranno due implementazioni del controller PID, bastate su due librarie diverse, con eventualmente la possibilità di attivare o meno l'auto-tuning dei parametri PID. Dopo aver individuato almeno un paio di configurazioni diverse di questi ultimi, e definito una metrica per misurare le prestazioni, il progetto prevede l'esecuzione di alcuni esperimenti, per ognuno dei setup sopra illustrati, con conseguente pubblicazione dei risultati in un notebook Jupyter.
+Author: Giuseppe Roberti
 
-Oggetti usati:
+Description: This project aims to experiment with heating systems based on PID controller. The heating element can operate with or without a fan. There will be two PID implementations based on different libraries, possibly giving you the option of activating auto-tuning. After manually finding at least two different PID configurations and defining a metric to measure the performance, the project expectation is to run one experiment for each configuration described above and then publish the results in a Jupyter notebook.
 
-- 1x Alimentatore ATX
+## Things
+
+- 1x 12V 5A power supply (for LED strips)
 - 1x ESP32
 - 1x Dual Mosfet D4184
-- 1x Piastra Riscaldante
-- 1x Ventola
-- 1x Laptop
-- 1x Router Wireless
+- 1x Heating Plate
+- 1x Fan
+- 1x Laptop (with AP functionality)
 
-Link a repo: - https://github.com/roberti42/unimi-embedded-project
+Repository: https://github.com/roberti42/unimi-embedded-project
 
-Licenza: GPLv3 + CC-BY 4.0
+License: GPLv3 + CC-BY 4.0
 
-Data *indicativa* di presentazione: gennaio 2022
+*Indicative* date of presentation: January, 2022
+
+## Breadboard (Draft)
+
+![ESPerimentino PID](imgs/heating-system.png)
+
+## Code Documentation
+
+The documentation can be found [here](https://unimi-embedded-project.roberti.dev/).
+
+## MQTT
+
+### Topics
+
+```
+esperimentino/data           - contains all data coming from the board in different formats
+esperimentino/data/var/:name - value of :name variable
+esperimentino/data/text      - text containing a summary of all variables (same text is printed through Serial line)
+esperimentino/data/json      - json values for client who need them (same information as text version)
+esperimentino/setup          - to configure and run an experiment
+```
+
+## Execution Script
+
+This script will execute the experiment by publishing an `esperimentino/setup` MQTT payload with relevant information, and will collect data from `esperimentino/data/json`.
+
+The experiment will consist in two phases, the first one is were the box will wait for readiness (we will try to clean ambient as much as we can the previous experiment).
+
+The second will run the experiment until a target setpoint specified in the `esperimentino/setup` message is reached (i.e. +2°C of ambient temperature).
+
+## Work In Progress
+
+![ESPerimentino PID (WIP)](imgs/WIP.gif)
+
