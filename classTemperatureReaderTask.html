@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ESPerimentino PID: Main Page</title>
+<title>ESPerimentino PID: TemperatureReaderTask Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -45,7 +45,6 @@ $(function() {
 });
 /* @license-end */</script>
 <div id="main-nav"></div>
-</div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -60,13 +59,41 @@ $(function() {
 </iframe>
 </div>
 
-<div class="PageDoc"><div class="header">
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="classTemperatureReaderTask-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">Main Page </div>  </div>
+<div class="title">TemperatureReaderTask Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This is the documentation site for the project ESPerimentino PID. You can browse the code and contribute by visiting <a href="https://github.com/roberti42/unimi-embedded-project">https://github.com/roberti42/unimi-embedded-project</a> </p>
-</div></div><!-- PageDoc -->
+
+<p>Read temperature indexed by index from a OneWire Dallas Temperature sensor and write it to temp.  
+ <a href="classTemperatureReaderTask.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="">TemperatureReaderTask.hpp</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for TemperatureReaderTask:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classTemperatureReaderTask.png" alt=""/>
+ </div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a1c039452dfa88552a0582dddfd19bcb4"><td class="memItemLeft" align="right" valign="top"><a id="a1c039452dfa88552a0582dddfd19bcb4"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TemperatureReaderTask</b> (<a class="el" href="classExperiment.html">Experiment</a> &amp;_experiment, uint8_t _index, float &amp;_temp)</td></tr>
+<tr class="separator:a1c039452dfa88552a0582dddfd19bcb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a54374f2b1db8cf7c6c66756db768c5"><td class="memItemLeft" align="right" valign="top"><a id="a4a54374f2b1db8cf7c6c66756db768c5"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>Callback</b> ()</td></tr>
+<tr class="separator:a4a54374f2b1db8cf7c6c66756db768c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Read temperature indexed by index from a OneWire Dallas Temperature sensor and write it to temp. </p>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
+<li><a class="el" href="">TemperatureReaderTask.hpp</a></li>
+</ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
