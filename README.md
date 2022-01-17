@@ -9,11 +9,16 @@ Description: This project aims to experiment with heating systems based on PID c
 ## Things
 
 - 1x 12V 5A power supply (for LED strips)
+- 1x Buck Converter DC-DC Step Down
+- 1x Breadboard Power Supply 5V + 3V3
+- 1x Breadboard
 - 1x ESP32
 - 1x Dual Mosfet D4184
+- 1x 5V Relay (1 channel)
+- 2x Dallas Temperature Sensor
 - 1x Heating Plate
-- 1x Fan
-- 1x Laptop (with AP functionality)
+- 1x Consumer Laptop Heatsink-Fan
+- 1x Junction Box
 
 Repository: https://github.com/roberti42/unimi-embedded-project
 
@@ -21,13 +26,22 @@ License: GPLv3 + CC-BY 4.0
 
 *Indicative* date of presentation: January, 2022
 
-## Breadboard (Draft)
+## Breadboard
 
 ![ESPerimentino PID](imgs/heating-system.png)
 
-## Code Documentation
+*Note: DS1809 dallas temperature sensor modules missing*.
 
-The documentation can be found [here](https://unimi-embedded-project.roberti.dev/).
+3rd Fritzing Parts Used:
+
+- [Heating Pad](fritzing/Heating_Pad.fzpz) (from https://forum.fritzing.org/t/silicon-heating-pads/2635)
+- [FAN Ventilator](fritzing/Fan%20-%20Ventilador.fzpz) (from https://forum.fritzing.org/t/fan-ventilador-5v-download-piece/2096)
+- [Breadboard Power Supply 3V3+5V](fritzing/YwRobot_Breadboard_Power_Supply_v5.fzpz) (part 9 from http://omnigatherum.ca/wp/?p=262)
+- [5V Relay](fritzing/1_Channel_Power_Relay.fzpz) (part 1 from http://omnigatherum.ca/wp/?p=262)
+
+## Source Code Documentation
+
+Source code documentation can be found [here](https://unimi-embedded-project.roberti.dev/).
 
 ## MQTT
 
