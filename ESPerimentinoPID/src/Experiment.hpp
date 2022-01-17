@@ -64,20 +64,22 @@ public:
   void Run(ExperimentConfig experimentConfig) {
     config = experimentConfig;
 
-    if (config.useFan)
-      digitalWrite(boardConfig.relayPin, HIGH);
+    digitalWrite(boardConfig.relayPin, config.useFan ? HIGH : LOW);
 
     internal.setParams(config.internalPidParams);
 
     external.setParams(config.externalPidParams);
     external.setpoint = external.temp + config.celsiusIncrement;
 
-    Serial.println("Running experiment ...");
-  }
-
-  void Setup() {
-    // Relay PIN
-    pinMode(boardConfig.relayPin, OUTPUT);
+    Serial.printf(
+      "Running experiment %s, %s, trying to increment temperature by %.3f"
+      " [ PID internal: %.3f,%.3f,%.3f | external:%.3f,%.3f,%.3f ]",
+      config.useFan ? "USING FAN" : "WITHOUT FAN",
+      config.pidAutotuning ? "WITH AUTOTUNING" : "WITHOUT AUTOTUNING",
+      config.celsiusIncrement,
+      config.internalPidParams.Kp, config.internalPidParams.Ki, config.internalPidParams.Kd,
+      config.externalPidParams.Kp, config.externalPidParams.Ki, config.externalPidParams.Kd
+    );
   }
 
 };

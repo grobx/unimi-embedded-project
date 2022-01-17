@@ -20,8 +20,8 @@
 #include "Config.h"
 
 const BoardConfig boardConfig = {
-  // relayPin, oneWireBusPin, heatingPin
-  21,          15,            4
+  // relayPin, rpmCounterPin, oneWireBusPin, heatingPin
+  21,          19,            15,            4
 };
 
 const NetworkConfig networkConfig = {

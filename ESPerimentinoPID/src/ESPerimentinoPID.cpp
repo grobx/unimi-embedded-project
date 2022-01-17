@@ -56,9 +56,31 @@ SetpointInputTask setpointInputTask (experiment);
 MQTTClientLoopTask mqttClientLoopTask (experiment);
 PrintTask printSerialTask (experiment, mqttClientLoopTask.client);
 
+void fan_setup() {
+  // Relay PIN
+  pinMode(boardConfig.relayPin, OUTPUT);
+
+  // FAN RPM Counter PIN
+  pinMode(boardConfig.rpmCounterPin, INPUT_PULLUP);
+  attachInterrupt(
+    boardConfig.rpmCounterPin,
+    []() {
+      unsigned long delta_t = micros() - experiment.vars.fan_last_t;
+      experiment.vars.fan_rpm = 60000000 / delta_t;
+      experiment.vars.fan_last_t = micros();
+      if (experiment.vars.fan_rpm > 7000)
+        experiment.vars.fan_rpm = 0;
+    },
+    RISING
+  );
+}
+
 void setup() {
   // Setup Serial
   Serial.begin(115200);
+
+  // Setup FAN
+  fan_setup();
 
   // Initialize Temperature Sensors
   experiment.sensors.begin();
@@ -90,9 +112,6 @@ void setup() {
   // Enable MQTT client loop
   experiment.runner.addTask(mqttClientLoopTask);
   mqttClientLoopTask.enable();
-
-  // Setup Experiment
-  experiment.Setup();
 }
 
 void loop() { experiment.runner.execute(); }

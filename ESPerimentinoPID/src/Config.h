@@ -19,6 +19,7 @@
 
 struct BoardConfig {
   const int relayPin;
+  const int rpmCounterPin;
   const int oneWireBusPin;
   const int heatingPin;    // heating element mosfet pin
 };
@@ -59,5 +60,6 @@ struct WorkVars {
   float internalHeaterDuty; // output to world (heating element duty cycle)
   float externalTemp;       // input from world
   float externalSetpoint;   // input from user
-  int count;                // fan counter
+  unsigned int fan_rpm;     // fan RPM
+  unsigned long fan_last_t; // last time fan RISING
 };

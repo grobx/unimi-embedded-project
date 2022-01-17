@@ -47,7 +47,10 @@ public:
   {};
 
   bool Callback () {
-    length = snprintf(&data[0], maxSerialPrint, "\n%s\n%s\ncount:%d", experiment.internal.pp("I"), experiment.external.pp("E"), experiment.vars.count);
+    length = snprintf(
+      &data[0], maxSerialPrint,
+      "\n%s\n%s\nfan_rpm:%d\n",
+      experiment.internal.pp("I"), experiment.external.pp("E"), experiment.vars.fan_rpm);
     mqttClient.publish("esperimentino/data/text", &data[0], length);
     mqttClient.publish("esperimentino/data/var/Itemp", experiment.internal.pp_temp());
     mqttClient.publish("esperimentino/data/var/Isetpoint", experiment.internal.pp_setpoint());

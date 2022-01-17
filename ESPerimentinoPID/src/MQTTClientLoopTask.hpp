@@ -26,6 +26,7 @@
 #include <WiFiClient.h>
 #include <WiFiAP.h>
 #include <PubSubClient.h>
+#include <ArduinoJson.h>
 
 static const uint maxPayloadLength = 1024;
 static const uint maxTopicLength = 255;
@@ -49,25 +50,45 @@ public:
   WiFiClient wifiClient;
   PubSubClient client;
   Experiment& experiment;
+  DynamicJsonDocument doc;
 
   MQTTClientLoopTask(
     Experiment& _experiment
   ):
     Task(100 * TASK_MILLISECOND, TASK_FOREVER),
     client(wifiClient),
-    experiment{_experiment}
+    experiment{_experiment}, doc{1024}
   {}
 
   bool Callback () {
     if (lastRead > lastExperiment) {
+      client.publish("esperimentino/data/debug/recv_payload", lastPayload, lastPayloadLength);
+
+      deserializeJson(doc, lastPayload);
+
       ExperimentConfig config = {
         true,                       // useFan
         ExperimentConfig::QuickPID, // pidImplementation
         false,                      // pidAutotuning
-        2.00,                       // celsiusIncrement
+        0.00,                       // celsiusIncrement
         { 100.00,   1.00,  50.00 }, // internalPidParams
         { 200.00,   1.00,   1.00 }, // externalPidParams
       };
+
+      JsonObject obj = doc.as<JsonObject>();
+
+      if (obj.containsKey("useFan")) config.useFan = obj["useFan"];
+      if (obj.containsKey("celsiusIncrement")) config.celsiusIncrement = obj["celsiusIncrement"];
+      if (obj.containsKey("internalPidParams")) {
+        config.internalPidParams.Kp = obj["internalPidParams"]["Kp"];
+        config.internalPidParams.Ki = obj["internalPidParams"]["Ki"];
+        config.internalPidParams.Kd = obj["internalPidParams"]["Kd"];
+      }
+      if (obj.containsKey("externalPidParams")) {
+        config.internalPidParams.Kp = obj["externalPidParams"]["Kp"];
+        config.internalPidParams.Ki = obj["externalPidParams"]["Ki"];
+        config.internalPidParams.Kd = obj["externalPidParams"]["Kd"];
+      }
 
       experiment.Run(config);
 
