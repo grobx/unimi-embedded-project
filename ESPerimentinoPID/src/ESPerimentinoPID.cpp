@@ -16,6 +16,23 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * @file ESPerimentinoPID.cpp
+ * @author Giuseppe Roberti (inbox@roberti.dev)
+ * @brief Embedded System Project
+ * @version 0.1
+ * @date 2022-01-17
+ * 
+ * @copyright Copyright (c) 2021-2022
+ */
+
+/**
+ * @mainpage Main Page
+ * 
+ * This is the documentation site for the project ESPerimentino PID. You can
+ * browse the code and contribute by visiting https://github.com/roberti42/unimi-embedded-project
+ */
+
 #include "TaskSchedulerDefs.h"
 #include <TaskScheduler.h>
 
@@ -38,12 +55,6 @@ ComputeInternalSetpointTask computeInternalSetpointTask (experiment);
 SetpointInputTask setpointInputTask (experiment);
 MQTTClientLoopTask mqttClientLoopTask (experiment);
 PrintTask printSerialTask (experiment, mqttClientLoopTask.client);
-
-void fan_setup() {
-
-
-
-}
 
 void setup() {
   // Setup Serial
