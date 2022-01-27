@@ -15,11 +15,11 @@ jobs:
       - name: Doxygen Action
         uses: mattnotmitt/doxygen-action@1.9.1
         with:
-          working-directory: docs/
+          working-directory: ESPerimentinoPID/docs/
 
       - name: Publish generated content to GitHub Pages
         uses: tsunematsu21/actions-publish-gh-pages@v1.0.2
         with:
-          dir: docs/html
+          dir: ESPerimentinoPID/docs/html
           branch: gh-pages
           token: ${{ secrets.ACCESS_TOKEN }}

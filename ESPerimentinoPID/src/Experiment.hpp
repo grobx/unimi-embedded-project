@@ -19,6 +19,7 @@
 
 #include "Config.h"
 #include "TemperaturePID.hpp"
+#include "TaskSchedulerDefs.h"
 
 #include <DallasTemperature.h>
 #include <QuickPID.h>
@@ -31,12 +32,14 @@ public:
   const BoardConfig& boardConfig;
   const NetworkConfig& networkConfig;
   const HeaterConfig& heaterConfig;
+  const ExperimentConfig& defaultConfig;
 
   // working variables
   WorkVars vars;
 
   // scheduler
   Scheduler runner;
+  // Scheduler temp_runner;
 
   // OneWire bus and temperature sensors
   OneWire oneWireBus;
@@ -52,9 +55,10 @@ public:
   Experiment(
     const BoardConfig& _boardConfig,
     const NetworkConfig& _networkConfig,
-    const HeaterConfig& _heaterConfig
+    const HeaterConfig& _heaterConfig,
+    const ExperimentConfig& _defaultConfig
   ):
-    boardConfig{_boardConfig}, networkConfig{_networkConfig}, heaterConfig{_heaterConfig},
+    boardConfig{_boardConfig}, networkConfig{_networkConfig}, heaterConfig{_heaterConfig}, defaultConfig{_defaultConfig},
     oneWireBus(boardConfig.oneWireBusPin),
     sensors(&oneWireBus),
     internal(vars.internalTemp, vars.internalHeaterDuty, vars.internalSetpoint),
@@ -69,14 +73,13 @@ public:
     internal.setParams(config.internalPidParams);
 
     external.setParams(config.externalPidParams);
-    external.setpoint = external.temp + config.celsiusIncrement;
+    external.setpoint = config.setpoint;
 
     Serial.printf(
-      "Running experiment %s, %s, trying to increment temperature by %.3f"
-      " [ PID internal: %.3f,%.3f,%.3f | external:%.3f,%.3f,%.3f ]",
+      "Running experiment %s, trying to reach temperature %.3f"
+      " [ PID internal: %.3f,%.3f,%.3f | external:%.3f,%.3f,%.3f ]\n",
       config.useFan ? "USING FAN" : "WITHOUT FAN",
-      config.pidAutotuning ? "WITH AUTOTUNING" : "WITHOUT AUTOTUNING",
-      config.celsiusIncrement,
+      config.setpoint,
       config.internalPidParams.Kp, config.internalPidParams.Ki, config.internalPidParams.Kd,
       config.externalPidParams.Kp, config.externalPidParams.Ki, config.externalPidParams.Kd
     );

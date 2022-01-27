@@ -20,7 +20,7 @@
  * @file ESPerimentinoPID.cpp
  * @author Giuseppe Roberti (inbox@roberti.dev)
  * @brief Embedded System Project
- * @version 0.1
+ * @version 0.2
  * @date 2022-01-17
  * 
  * @copyright Copyright (c) 2021-2022
@@ -30,31 +30,42 @@
  * @mainpage Main Page
  * 
  * This is the documentation site for the project ESPerimentino PID. You can
- * browse the code and contribute by visiting https://github.com/roberti42/unimi-embedded-project
+ * browse the code and contribute by visiting https://github.com/grobx/unimi-embedded-project
  */
 
 #include "TaskSchedulerDefs.h"
 #include <TaskScheduler.h>
 
-#include "TemperatureReaderTask.hpp"
-#include "ComputeHeatTask.hpp"
-#include "ComputeInternalSetpointTask.hpp"
-#include "SetpointInputTask.hpp"
-#include "PrintTask.hpp"
-#include "MQTTClientLoopTask.hpp"
+#include "task/TemperatureReaderTask.hpp"
+#include "task/ComputeHeatTask.hpp"
+#include "task/ComputeInternalSetpointTask.hpp"
+#include "task/SetpointInputTask.hpp"
+#include "task/PrintTask.hpp"
+#include "task/MQTTClientLoopTask.hpp"
 
 #include "Experiment.hpp"
 #include "LocalConfig.h"
 
-Experiment experiment (boardConfig, networkConfig, heaterConfig);
+Experiment experiment (boardConfig, networkConfig, heaterConfig, defaultConfig);
 
-TemperatureReaderTask internalTemperatureReaderTask (experiment, 0, experiment.vars.internalTemp);
-TemperatureReaderTask externalTemperatureReaderTask (experiment, 1, experiment.vars.externalTemp);
-ComputeHeatTask computeHeaterDutyTask (experiment);
-ComputeInternalSetpointTask computeInternalSetpointTask (experiment);
-SetpointInputTask setpointInputTask (experiment);
-MQTTClientLoopTask mqttClientLoopTask (experiment);
-PrintTask printSerialTask (experiment, mqttClientLoopTask.client);
+TemperatureReaderTask internalTemperatureReaderTask (
+  experiment, 0, experiment.vars.internalTemp, heaterConfig.readInterval);
+
+TemperatureReaderTask externalTemperatureReaderTask (
+  experiment, 1, experiment.vars.externalTemp, heaterConfig.readInterval);
+
+ComputeHeatTask computeHeaterDutyTask (
+  experiment, 100 * TASK_MILLISECOND);
+
+ComputeInternalSetpointTask computeInternalSetpointTask (
+  experiment, 100 * TASK_MILLISECOND);
+
+MQTTClientLoopTask mqttClientLoopTask (experiment, 100 * TASK_MILLISECOND);
+
+// SetpointInputTask setpointInputTask (experiment, 100 * TASK_MILLISECOND);
+
+PrintTask printSerialTask (
+  experiment, mqttClientLoopTask.client, 100 * TASK_MILLISECOND);
 
 void fan_setup() {
   // Relay PIN
@@ -82,36 +93,23 @@ void setup() {
   // Setup FAN
   fan_setup();
 
-  // Initialize Temperature Sensors
+  // Initialize Digital Temperature Sensors
   experiment.sensors.begin();
+  experiment.sensors.setWaitForConversion(false);
 
-  // Internal Temperature Reader Task
-  experiment.runner.addTask(internalTemperatureReaderTask);
-  internalTemperatureReaderTask.enable();
-
-  // External Temperature Reader Task
-  experiment.runner.addTask(externalTemperatureReaderTask);
-  externalTemperatureReaderTask.enable();
-
-  // Compute Heater Duty Task
-  experiment.runner.addTask(computeHeaterDutyTask);
-  computeHeaterDutyTask.enable();
-
-  // Compute Internal Setpoint Task (Ambient)
-  experiment.runner.addTask(computeInternalSetpointTask);
-  computeInternalSetpointTask.enable();
-
-  // Setpoint Input Task
-  experiment.runner.addTask(setpointInputTask);
-  setpointInputTask.enable();
-
-  // Printer Task
-  experiment.runner.addTask(printSerialTask);
-  printSerialTask.enable();
-
-  // Enable MQTT client loop
-  experiment.runner.addTask(mqttClientLoopTask);
-  mqttClientLoopTask.enable();
+  // Register tasks into Scheduler and enable them
+  for (auto t : std::vector<Task*> {
+    &internalTemperatureReaderTask, // Internal Temperature Reader Task
+    &externalTemperatureReaderTask, // External Temperature Reader Task
+    &computeHeaterDutyTask,         // Compute Heater Duty Task
+    &computeInternalSetpointTask,   // Compute Internal Setpoint Task (Ambient)
+    // &setpointInputTask,             // Setpoint Input Task
+    &printSerialTask,               // Printer Task
+    &mqttClientLoopTask             // Enable MQTT client loop
+  }) {
+    experiment.runner.addTask(*t);
+    t->enable();
+  }
 }
 
 void loop() { experiment.runner.execute(); }

@@ -19,6 +19,10 @@
 
 #include "Config.h"
 
+#include <sys/types.h>
+#include <stdint.h>
+#include <stdio.h>
+
 #include <QuickPID.h>
 
 class TemperaturePID {
@@ -41,14 +45,13 @@ public:
     temp{_input}, heat{_output}, setpoint{_target},
     PID(&temp, &heat, &setpoint)
   {
-    setpoint = -127.0;
     PID.SetControllerDirection(QuickPID::Action::direct);
   }
 
   void reset () {
-    // heat = 0.0;
+    // heat = experiment.heaterConfig.minDuty;
     PID.SetMode(QuickPID::Control::manual);
-    PID.SetMode(QuickPID::Control::timer);
+    PID.SetMode(QuickPID::Control::automatic);
   }
 
   bool compute () {
@@ -58,6 +61,10 @@ public:
   void setParams (PidParams _params) {
     params = _params;
     PID.SetTunings(params.Kp, params.Ki, params.Kd);
+  }
+
+  bool enabled () {
+    return params.Kp != 0.0 || params.Ki != 0.0 || params.Kd != 0.0;
   }
 
   char* pp (const char* prefix) {

@@ -1,0 +1,11 @@
+name: embedded
+dependencies:
+  - pip
+  - numpy
+  - pandas
+  - scipy
+  - jupyter
+  - matplotlib
+  - pip:
+    - platformio
+    - paho-mqtt

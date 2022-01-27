@@ -1,0 +1,13 @@
+{
+    "wifi": {
+        "ssid":     "MySSID",
+        "password": "WiFiSecret"
+    },
+    "mqtt": {
+        "broker":   "127.0.0.1",
+        "port":     1883,
+        "username": "mqtt",
+        "password": "secret"
+    },
+    "readInterval": 1000
+}

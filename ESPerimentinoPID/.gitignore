@@ -6,3 +6,9 @@
 src/GPATH
 src/GRTAGS
 src/GTAGS
+docs/html/
+compile_commands.json
+__pycache__
+.cache
+.ipynb_checkpoints
+src/LocalConfig.h

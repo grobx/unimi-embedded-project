@@ -1,0 +1,4 @@
+CompileFlags:
+  Add: [-mlong-calls, -isysroot=/home/r42/.espressif/tools/xtensa-esp32-elf/esp-2021r2-8.4.0/xtensa-esp32-elf]
+  Remove: [-fno-tree-switch-conversion, -mtext-section-literals, -mlongcalls, -fstrict-volatile-bitfields]
+

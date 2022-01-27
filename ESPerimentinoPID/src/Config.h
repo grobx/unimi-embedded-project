@@ -18,40 +18,43 @@
 #pragma once
 
 struct BoardConfig {
-  const int relayPin;
-  const int rpmCounterPin;
-  const int oneWireBusPin;
-  const int heatingPin;    // heating element mosfet pin
+  const int relayPin;       // relay fan
+  const int rpmCounterPin;  // fan feedback
+  const int oneWireBusPin;  // digital temperature sensor
+  const int heatingPin;     // heating element mosfet
 };
 
 struct HeaterConfig {
-  const int freq;          // PWM frequency
-  const int heatChannel;   // PWM channel
-  const int resolution;    // PWM resolution
-  const int maxDuty;       // PWM max duty
-  const float maxSetpoint; // max setpoint °C
+  const int readInterval;   // read temperature interval (internal and external)
+  const int freq;           // PWM frequency
+  const int heatChannel;    // PWM channel
+  const int resolution;     // PWM resolution
+  const float minDuty;      // PWM min duty
+  const float maxDuty;      // PWM max duty
+  const float maxSetpoint;  // max setpoint °C
+  const float minSetpoint;  // min setpoint °C
 };
 
 struct NetworkConfig {
-  const char* ssid; // WiFi SSID
-  const char* password; // WiFi password
-  const char* brokerAddress;
-  const int port;
+  const char* ssid;           // WiFi SSID
+  const char* password;       // WiFi password
+  const char* brokerAddress;  // MQTT broker address
+  const int port;             // MQTT broker port
+  const char* mqttUser;       // MQTT username
+  const char* mqttPass;       // MQTT password
 };
 
 struct PidParams {
-  float Kp, Ki, Kd; // input from user
+  float Kp; // proportional PID parameter
+  float Ki; // integrative PID parameter
+  float Kd; // derivative PID parameter
 };
 
 struct ExperimentConfig {
-  bool useFan;                         // input from user
-  enum {
-    QuickPID, SomethingElse
-  } pidImplementation;                 // input from user
-  bool pidAutotuning;                  // input from user
-  float celsiusIncrement;              // input from user
-  PidParams internalPidParams;         // input from user
-  PidParams externalPidParams;         // input from user
+  bool useFan;                  // wether the fan is on or off
+  float setpoint;               // target setpoint specified by user
+  PidParams internalPidParams;  // internal PID parameters
+  PidParams externalPidParams;  // external PID parameters
 };
 
 struct WorkVars {
