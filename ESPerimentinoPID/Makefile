@@ -14,15 +14,36 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PHONY=flash gallery setup experiment subscribe notebooks
-
 WIFI_SSID=$(shell cat "config.json" | jq ".wifi.ssid")
 WIFI_PASSWORD=$(shell cat "config.json" | jq ".wifi.password")
+
 MQTT_BROKER:=$(shell cat "config.json" | jq ".mqtt.broker")
 MQTT_PORT=$(shell cat "config.json" | jq ".mqtt.port")
 MQTT_USERNAME=$(shell cat "config.json" | jq ".mqtt.username")
 MQTT_PASSWORD=$(shell cat "config.json" | jq ".mqtt.password")
-READ_INTERVAL=$(shell cat "config.json" | jq ".readInterval")
+
+BOARD_RELAY_PIN=$(shell cat "config.json" | jq ".board.relayPin")
+BOARD_RPM_COUNTER_PIN=$(shell cat "config.json" | jq ".board.rpmCounterPin")
+BOARD_ONE_WIRE_BUS_PIN=$(shell cat "config.json" | jq ".board.oneWireBusPin")
+BOARD_HEATING_PIN=$(shell cat "config.json" | jq ".board.heatingPin")
+
+HEATER_READ_INTERVAL=$(shell cat "config.json" | jq ".heater.readInterval")
+HEATER_FREQ=$(shell cat "config.json" | jq ".heater.freq")
+HEATER_HEAT_CHANNEL=$(shell cat "config.json" | jq ".heater.heatChannel")
+HEATER_RESOLUTION=$(shell cat "config.json" | jq ".heater.resolution")
+HEATER_MIN_DUTY=$(shell cat "config.json" | jq ".heater.minDuty")
+HEATER_MAX_DUTY=$(shell cat "config.json" | jq ".heater.maxDuty")
+HEATER_MAX_SETPOINT=$(shell cat "config.json" | jq ".heater.maxSetpoint")
+HEATER_MIN_SETPOINT=$(shell cat "config.json" | jq ".heater.minSetpoint")
+
+EXPERIMENT_USE_FAN=$(shell cat "config.json" | jq ".experiment.useFan")
+EXPERIMENT_SETPOINT=$(shell cat "config.json" | jq ".experiment.setpoint")
+EXPERIMENT_INTERNAL_KP=$(shell cat "config.json" | jq ".experiment.internalPidParams.Kp")
+EXPERIMENT_INTERNAL_KI=$(shell cat "config.json" | jq ".experiment.internalPidParams.Ki")
+EXPERIMENT_INTERNAL_KD=$(shell cat "config.json" | jq ".experiment.internalPidParams.Kd")
+EXPERIMENT_EXTERNAL_KP=$(shell cat "config.json" | jq ".experiment.externalPidParams.Kp")
+EXPERIMENT_EXTERNAL_KI=$(shell cat "config.json" | jq ".experiment.externalPidParams.Ki")
+EXPERIMENT_EXTERNAL_KD=$(shell cat "config.json" | jq .experiment.externalPidParams.Kd)
 
 define LOCAL_CONFIG_H
 #pragma once
@@ -32,28 +53,36 @@ define LOCAL_CONFIG_H
 #include "TaskSchedulerDefs.h"
 
 const BoardConfig boardConfig = {
-  21, // relay PIN (actuate the FAN)
-  19, // rpm counter PIN (FAN feedback)
-  15, // one wire bus PIN (digital temperature sensor)
-  4   // heating PIN (for the MOSFET)
+  $(BOARD_RELAY_PIN), // relay PIN (actuate the FAN)
+  $(BOARD_RPM_COUNTER_PIN), // rpm counter PIN (FAN feedback)
+  $(BOARD_ONE_WIRE_BUS_PIN), // one wire bus PIN (digital temperature sensor)
+  $(BOARD_HEATING_PIN) // heating PIN (for the MOSFET)
 };
 
 const HeaterConfig heaterConfig = {
-  $(READ_INTERVAL) * TASK_MILLISECOND,
-  1000,  // PWM frequency
-  10,    // PWM channel
-  8,     // PWM resolution
-  0.0,   // PWM min duty value
-  255.0, // PWM max duty value
-  60.0,  // max internal setpoint
-  DEVICE_DISCONNECTED_C   // min internal setpoint
+  $(HEATER_READ_INTERVAL) * TASK_MILLISECOND,
+  $(HEATER_FREQ), // PWM frequency
+  $(HEATER_HEAT_CHANNEL), // PWM channel
+  $(HEATER_RESOLUTION), // PWM resolution
+  $(HEATER_MIN_DUTY), // PWM min duty value
+  $(HEATER_MAX_DUTY), // PWM max duty value
+  $(HEATER_MAX_SETPOINT), // max internal setpoint
+  $(HEATER_MIN_SETPOINT) // min internal setpoint
 };
 
 const ExperimentConfig defaultConfig = {
-  true,                       // useFan
-  0.00,                       // setpoint
-  {   0.00,   0.00,   0.00 }, // internalPidParams
-  {   0.00,   0.00,   0.00 }, // externalPidParams
+  $(EXPERIMENT_USE_FAN), // useFan
+  $(EXPERIMENT_SETPOINT), // setpoint
+  { // internalPidParams
+	$(EXPERIMENT_INTERNAL_KP),
+	$(EXPERIMENT_INTERNAL_KI),
+	$(EXPERIMENT_INTERNAL_KD)
+  },
+  { // externalPidParams
+	$(EXPERIMENT_EXTERNAL_KP),
+	$(EXPERIMENT_EXTERNAL_KI),
+	$(EXPERIMENT_EXTERNAL_KD)
+  }
 };
 
 const NetworkConfig networkConfig = {
@@ -66,6 +95,8 @@ const NetworkConfig networkConfig = {
 };
 endef
 export LOCAL_CONFIG_H
+
+.PHONY: flash gallery setup experiment subscribe report reports
 
 flash:
 	pio run -t compiledb
@@ -104,5 +135,8 @@ subscribe:
 		-t "esperimentino/data/json" \
 		-F '@Y-@m-@dT@H:@M:@S:@N@z : %t : %J' --pretty
 
-notebooks:
-	cd report && jupyter nbconvert --to notebook --inplace --execute *.ipynb && jupyter trust *.ipynb
+report:
+	cd report && jupyter nbconvert --to notebook --inplace --execute esperimentino-$(experiment).ipynb index.ipynb && jupyter trust esperimentino-$(experiment).ipynb index.ipynb
+
+reports:
+	cd report && jupyter nbconvert --to notebook --inplace --execute esperimentino-*.ipynb index.ipynb && jupyter trust esperimentino-*.ipynb index.ipynb

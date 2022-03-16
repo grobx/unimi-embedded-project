@@ -9,5 +9,34 @@
         "username": "mqtt",
         "password": "secret"
     },
-    "readInterval": 1000
+    "board": {
+        "relayPin": 21,
+        "rpmCounterPin": 19,
+        "oneWireBusPin": 15,
+        "heatingPin": 4
+    },
+    "heater": {
+        "readInterval": 100,
+        "freq": 1000,
+        "heatChannel": 10,
+        "resolution": 8,
+        "minDuty": 0.0,
+        "maxDuty": 255.0,
+        "maxSetpoint": 60.0,
+        "minSetpoint": -127.0
+    },
+    "experiment": {
+        "useFan": true,
+        "setpoint": 0.0,
+        "internalPidParams": {
+            "Kp": 0.0,
+            "Ki": 0.0,
+            "Kd": 0.0
+    },
+        "externalPidParams": {
+            "Kp": 0.0,
+            "Ki": 0.0,
+            "Kd": 0.0
+        }
+    }
 }

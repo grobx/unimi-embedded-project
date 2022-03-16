@@ -1,4 +1,4 @@
-name: embedded
+name: esperimentino
 dependencies:
   - pip
   - numpy

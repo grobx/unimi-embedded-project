@@ -111,14 +111,6 @@ class Experiment:
         overheat_secs = round(overheat_delta / 1e6)
         overheat_time = str(timedelta(seconds=overheat_secs))
 
-        # penality = 0.1 * (0.1 * goal_secs + 0.9 * overheat_secs) + 0.9 * (overheat * 1000)
-        # penality /= incr
-
-        # p_goal = goal_secs / incr
-        # p_overheat = overheat_secs * overheat / 2
-        # p_area = abs( self.df.loc[t_reached:]['Etemp'].sum() - self.df.loc[t_reached:]['Esetp'].sum() )
-        # penality = 0.1 * p_goal + 0.9 * (0.9 * p_overheat + 0.1 * p_area)
-
         p_goal = goal_secs / incr
         p_area = abs(self.df.loc[t_reached:]['Etemp'] - self.df.loc[t_reached:]['Esetp'])
         p_area = p_area.sum() * p_area.max()

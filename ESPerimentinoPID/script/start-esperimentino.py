@@ -65,7 +65,7 @@ def subscribe(client: mqtt_client, data_writer, setup_fd):
                     userdata['goal_reached_count'] -= 1
 
                 # we consider the goal reached after 20s
-                if goal_reached_ms(userdata, config['readInterval']) >= s2ms(20):
+                if goal_reached_ms(userdata, config['heater']['readInterval']) >= s2ms(20):
                     log.info(f"Goal reached! [experiment ends within {min_from_goal_reached_t} minutes]")
                     userdata['goal_reached_t'] = time()
 
@@ -107,10 +107,6 @@ def run(args):
         ]
         data_writer = csv.DictWriter(data_fd, fieldnames=fieldnames)
         with open(setup_file, 'w+') as setup_fd:
-            # msg = json.dumps(args)
-            # cmd = \
-            #     f'mosquitto_pub -h "{c["broker"]}" -p {c["port"]} -u "{c["username"]}" \
-            #     -P "{c["password"]}" -t "esperimentino/setup" -m "{msg}"'
             mqtt_client = connect_mqtt(args)
             subscribe(mqtt_client, data_writer, setup_fd)
             mqtt_client.loop_forever()
