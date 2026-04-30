@@ -237,7 +237,7 @@ In this little project we don't expect to be precise and for this reason we're g
 
 ## Results
 
-[Here](report/index.ipynb) are some reports about a bunch of experiments I've done. You will find the metric `a(x)` in the column `p_goal`, the metric `b(x)` in the column `p_area` and the weight function `w(x)` in the column `penality`.
+[Here](https://github.com/grobx/unimi-embedded-project-report/blob/main/index.ipynb) are some reports about a bunch of experiments I've done. You will find the metric `a(x)` in the column `p_goal`, the metric `b(x)` in the column `p_area` and the weight function `w(x)` in the column `penality`.
 
 ## Documentation
 
